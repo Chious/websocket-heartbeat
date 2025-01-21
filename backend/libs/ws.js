@@ -9,8 +9,6 @@ wss.on('connection', ws => {
     lastHeartbeat: Date.now(),
   });
 
-  console.log(`Client ${clientId} connected`);
-
   // 處理接收到的消息
   ws.on('message', message => {
     const data = message.toString();
@@ -21,8 +19,6 @@ wss.on('connection', ws => {
       clients.get(clientId).lastHeartbeat = Date.now();
       clients.get(clientId).isAlive = true;
     } else {
-      // 處理其他消息
-      console.log(`Received from client ${clientId}: ${data}`);
       // 廣播消息給所有客戶端
       broadcastMessage(data, clientId);
     }
@@ -30,7 +26,6 @@ wss.on('connection', ws => {
 
   // 處理連接關閉
   ws.on('close', () => {
-    console.log(`Client ${clientId} disconnected`);
     clients.delete(clientId);
   });
 

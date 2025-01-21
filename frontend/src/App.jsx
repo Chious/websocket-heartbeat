@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from 'react';
+import { useWs } from './hooks/useWs'; // Adjust the import path as necessary
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const inputRef = React.useRef(null);
+  const [isReady, val, send] = useWs('ws://localhost:3000');
 
+  const sendMessage = message => {
+    if (isReady) {
+      send(message);
+    }
+  };
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="p-4">
+      <div className="mb-4">
+        <h2 className="text-xl font-bold">
+          WebSocket Status: {isReady ? 'Connected' : 'Disconnected'}
+        </h2>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      <div className="mb-4">
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded"
+          onClick={() => sendMessage(inputRef.current.value)}
+        >
+          Send Test Message
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+        <label className="ml-4">Send Message:</label>
+        <input
+          ref={inputRef}
+          type="text"
+          className="ml-4 border border-solid border-gray-500 p-2 rounded"
+        />
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <div className="border rounded p-4">
+        <h3 className="font-bold mb-2">Messages:</h3>
+        <ul>{val}</ul>
+      </div>
+    </div>
+  );
+};
 
-export default App
+export default App;
